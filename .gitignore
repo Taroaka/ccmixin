@@ -27,6 +27,11 @@ Thumbs.db
 .last_check
 claude-docs-helper.sh
 
+# Claude Code Mixin OSS
+repos/*
+!repos/README.md
+ccmixin/
+
 # Test files
 test_*.txt
 test_*.md

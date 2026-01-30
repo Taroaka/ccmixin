@@ -1,230 +1,142 @@
-# Claude Code Documentation Mirror
+# Claude Code Mixin OSS
 
-[![Last Update](https://img.shields.io/github/last-commit/ericbuess/claude-code-docs/main.svg?label=docs%20updated)](https://github.com/ericbuess/claude-code-docs/commits/main)
-[![Platform](https://img.shields.io/badge/platform-macOS%20%7C%20Linux-blue)]()
-[![Beta](https://img.shields.io/badge/status-early%20beta-orange)](https://github.com/ericbuess/claude-code-docs/issues)
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![Platform](https://img.shields.io/badge/platform-Claude%20Code-blue)]()
 
-Local mirror of Claude Code documentation files from https://docs.anthropic.com/en/docs/claude-code/, updated every 3 hours.
+複数のClaude Code向けOSSを統合して、ベストプラクティスを集めた最強の設定を作成するツール。
 
-## ⚠️ Early Beta Notice
+## 🎯 これは何？
 
-**This is an early beta release**. There may be errors or unexpected behavior. If you encounter any issues, please [open an issue](https://github.com/ericbuess/claude-code-docs/issues) - your feedback helps improve the tool!
+GitHub上には素晴らしいClaude Code向けのOSS（スラッシュコマンド、CLAUDE.md、設定など）がたくさんあります。しかし、1つだけでは満足できない...複数の良いところを組み合わせたい！
 
-## 🆕 Version 0.3.3 - Changelog Integration
+**Claude Code Mixin OSS**は、Claude Code自身が複数のOSSを分析・理解し、最適な形で統合します。
 
-**New in this version:**
-- 📋 **Claude Code Changelog**: Access the official Claude Code release notes with `/docs changelog`
-- 🍎 **Full macOS compatibility**: Fixed shell compatibility issues for Mac users
-- 🐧 **Linux support**: Tested on Ubuntu, Debian, and other distributions
-- 🔧 **Improved installer**: Better handling of updates and edge cases
+### 特徴
 
-To update:
-```bash
-curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-docs/main/install.sh | bash
-```
+- 🤖 **AIによるインテリジェントなマージ** - Claude Codeが内容を理解して統合
+- 📚 **完全自動** - スクリプト不要、`/ccmixin`コマンド1つで完了
+- 🔄 **衝突解決** - 重複や矛盾を検出し、ユーザーに確認
+- ✨ **品質重視** - 単純な連結ではなく、意味のある統合
 
-## Why This Exists
+## 📋 使い方
 
-- **Faster access** - Reads from local files instead of fetching from web
-- **Automatic updates** - Attempts to stay current with the latest documentation
-- **Track changes** - See what changed in docs over time
-- **Claude Code changelog** - Quick access to official release notes and version history
-- **Better Claude Code integration** - Allows Claude to explore documentation more effectively
-
-## Platform Compatibility
-
-- ✅ **macOS**: Fully supported (tested on macOS 12+)
-- ✅ **Linux**: Fully supported (Ubuntu, Debian, Fedora, etc.)
-- ⏳ **Windows**: Not yet supported - [contributions welcome](#contributing)!
-
-### Prerequisites
-
-This tool requires the following to be installed:
-- **git** - For cloning and updating the repository (usually pre-installed)
-- **jq** - For JSON processing in the auto-update hook (pre-installed on macOS; Linux users may need `apt install jq` or `yum install jq`)
-- **curl** - For downloading the installation script (usually pre-installed)
-- **Claude Code** - Obviously :)
-
-## Installation
-
-Run this single command:
+### 1. このリポジトリをクローン
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-docs/main/install.sh | bash
+git clone https://github.com/your-username/claude-code-docs.git
+cd claude-code-docs
 ```
 
-This will:
-1. Install to `~/.claude-code-docs` (or migrate existing installation)
-2. Create the `/docs` slash command to pass arguments to the tool and tell it where to find the docs
-3. Set up a 'PreToolUse' 'Read' hook to enable automatic git pull when reading docs from the ~/.claude-code-docs`
-
-**Note**: The command is `/docs (user)` - it will show in your command list with "(user)" after it to indicate it's a user-created command.
-
-## Usage
-
-The `/docs` command provides instant access to documentation with optional freshness checking.
-
-### Default: Lightning-fast access (no checks)
-```bash
-/docs hooks        # Instantly read hooks documentation
-/docs mcp          # Instantly read MCP documentation
-/docs memory       # Instantly read memory documentation
-```
-
-You'll see: `📚 Reading from local docs (run /docs -t to check freshness)`
-
-### Check documentation sync status with -t flag
-```bash
-/docs -t           # Show sync status with GitHub
-/docs -t hooks     # Check sync status, then read hooks docs
-/docs -t mcp       # Check sync status, then read MCP docs
-```
-
-### See what's new
-```bash
-/docs what's new   # Show recent documentation changes with diffs
-```
-
-### Read Claude Code changelog
-```bash
-/docs changelog    # Read official Claude Code release notes and version history
-```
-
-The changelog feature fetches the latest release notes directly from the official Claude Code repository, showing you what's new in each version.
-
-### Uninstall
-```bash
-/docs uninstall    # Get commnd to remove claude-code-docs completely
-```
-
-### Customize command name
-
-If you prefer a different command name (e.g., `/claude-docs` instead of `/docs`), you can easily customize it:
+### 2. 統合したいOSSを`repos/`配下にクローン
 
 ```bash
-# Rename the command file
-mv ~/.claude/commands/docs.md ~/.claude/commands/claude-docs.md
+cd repos/
 
-# Now use /claude-docs instead of /docs
-/claude-docs hooks
-/claude-docs mcp
+# 例: 2つのClaude Code OSSをクローン
+git clone https://github.com/user1/awesome-claude-skills
+git clone https://github.com/user2/claude-best-practices
+
+cd ..
 ```
 
-You can use any name you prefer: `/cdocs`, `/claude-code-docs`, etc. The command file name determines the slash command.
-
-### Creative usage examples
-```bash
-# Natural language queries work great
-/docs what environment variables exist and how do I use them?
-/docs explain the differences between hooks and MCP
-
-# Check for recent changes
-/docs -t what's new in the latest documentation?
-/docs changelog    # Check Claude Code release notes
-
-# Search across all docs
-/docs find all mentions of authentication
-/docs how do I customize Claude Code's behavior?
-```
-
-## How Updates Work
-
-The documentation attempts to stay current:
-- GitHub Actions runs periodically to fetch new documentation
-- When you use `/docs`, it checks for updates
-- Updates are pulled when available
-- You may see "🔄 Updating documentation..." when this happens
-
-Note: If automatic updates fail, you can always run the installer again to get the latest version.
-
-## Updating from Previous Versions
-
-Regardless of which version you have installed, simply run:
+### 3. Claude Codeで`/ccmixin`を実行
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ericbuess/claude-code-docs/main/install.sh | bash
+# Claude Code CLIで
+/ccmixin
 ```
 
-The installer will handle migration and updates automatically.
-
-## Troubleshooting
-
-### Command not found
-If `/docs` returns "command not found":
-1. Check if the command file exists: `ls ~/.claude/commands/docs.md`
-2. Restart Claude Code to reload commands
-3. Re-run the installation script
-
-### Documentation not updating
-If documentation seems outdated:
-1. Run `/docs -t` to check sync status and force an update
-2. Manually update: `cd ~/.claude-code-docs && git pull`
-3. Check if GitHub Actions are running: [View Actions](https://github.com/ericbuess/claude-code-docs/actions)
-
-### Installation errors
-- **"git/jq/curl not found"**: Install the missing tool first
-- **"Failed to clone repository"**: Check your internet connection
-- **"Failed to update settings.json"**: Check file permissions on `~/.claude/settings.json`
-
-## Uninstalling
-
-To completely remove the docs integration:
+### 4. 統合版を確認
 
 ```bash
-/docs uninstall
+cd ccmixin/
+ls -la
+
+# 統合されたCLAUDE.md、README.md、スラッシュコマンドなどが生成されています
 ```
 
-Or run:
+## 🔧 何がマージされる？
+
+Claude Codeは以下を自動的に統合します：
+
+| ファイル | マージ方法 |
+|---------|-----------|
+| `CLAUDE.md` | 両方の内容を理解し、統合版を生成 |
+| `README.md` | プロジェクト説明やセクションを統合 |
+| `.claude/settings.json` | hooksを配列として統合 |
+| `.claude/commands/*.md` | 衝突時にユーザーに確認 |
+| `scripts/` | 両方のスクリプトを保持または選択 |
+| その他すべてのファイル | 独自ファイルはコピー、衝突時は確認 |
+
+### 除外されるファイル
+
+- `.git/` - Gitメタデータ
+- `node_modules/`, `venv/` - 依存関係
+- `.env` - 環境変数
+- `.DS_Store`, `*.log` - システムファイル
+
+## 💡 使用例
+
+### 例1: スラッシュコマンドを統合
+
 ```bash
-~/.claude-code-docs/uninstall.sh
+# Repo1: /commit, /review, /test
+# Repo2: /commit, /deploy, /docs
+
+# /ccmixin を実行
+# → /commit が衝突 → ユーザーに確認
+# → その他はすべて統合
+# 結果: /commit (選択版), /review, /test, /deploy, /docs
 ```
 
-See [UNINSTALL.md](UNINSTALL.md) for manual uninstall instructions.
+### 例2: CLAUDE.mdを統合
 
-## Security Notes
+```bash
+# Repo1: プロジェクト構造の詳細説明
+# Repo2: ベストプラクティスとコーディング規約
 
-- The installer modifies `~/.claude/settings.json` to add an auto-update hook
-- The hook only runs `git pull` when reading documentation files
-- All operations are limited to the documentation directory
-- No data is sent externally - everything is local
-- **Repository Trust**: The installer clones from GitHub over HTTPS. For additional security, you can:
-  - Fork the repository and install from your own fork
-  - Clone manually and run the installer from the local directory
-  - Review all code before installation
+# /ccmixin を実行
+# → Claude Codeが両方を理解
+# 結果: 構造説明 + ベストプラクティスが統合された CLAUDE.md
+```
 
-## What's New
+## 📖 詳細ドキュメント
 
-### v0.3.3 (Latest)
-- Added Claude Code changelog integration (`/docs changelog`)
-- Fixed shell compatibility for macOS users (zsh/bash)
-- Improved documentation and error messages
-- Added platform compatibility badges
+- [`CLAUDE.md`](./CLAUDE.md) - このプロジェクトの詳細ガイド
+- [`repos/README.md`](./repos/README.md) - リポジトリのクローン方法
+- [`docs/`](./docs/) - Claude Code公式ドキュメント（参照用）
 
-### v0.3.2
-- Fixed automatic update functionality  
-- Improved handling of local repository changes
-- Better error recovery during updates
+## 🛠️ トラブルシューティング
 
-## Contributing
+### `repos/`にリポジトリが1つしかない
 
-**Contributions are welcome!** This is a community project and we'd love your help:
+```
+❌ エラー: 最低2つのリポジトリが必要です
+```
 
-- 🪟 **Windows Support**: Want to help add Windows compatibility? [Fork the repository](https://github.com/ericbuess/claude-code-docs/fork) and submit a PR!
-- 🐛 **Bug Reports**: Found something not working? [Open an issue](https://github.com/ericbuess/claude-code-docs/issues)
-- 💡 **Feature Requests**: Have an idea? [Start a discussion](https://github.com/ericbuess/claude-code-docs/issues)
-- 📝 **Documentation**: Help improve docs or add examples
+**解決策**: もう1つOSSをクローンしてください。
 
-You can also use Claude Code itself to help build features - just fork the repo and let Claude assist you!
+### `ccmixin/`フォルダが既に存在する
 
-## Known Issues
+Claude Codeが削除していいか確認します。削除を許可するか、手動で別の場所に移動してください。
 
-As this is an early beta, you might encounter some issues:
-- Auto-updates may occasionally fail on some network configurations
-- Some documentation links might not resolve correctly
+### ファイルの衝突が多すぎる
 
-If you find any issues not listed here, please [report them](https://github.com/ericbuess/claude-code-docs/issues)!
+ユーザー確認が必要なファイルが多い場合、Claude Codeが1つずつ確認します。時間がかかる場合は、事前に片方のリポジトリを調整することを検討してください。
 
-## License
+## 🤝 コントリビューション
 
-Documentation content belongs to Anthropic.
-This mirror tool is open source - contributions welcome!
+Issue、Pull Requestを歓迎します！
+
+## 📝 ライセンス
+
+このツール自体はMITライセンスです。統合されるOSSは各プロジェクトのライセンスに従います。
+
+## 🙏 謝辞
+
+- [Claude Code](https://claude.ai/code) - Anthropicの素晴らしいツール
+- すべてのClaude Code OSSコミュニティ
+
+---
+
+**注意**: このツールは統合元のOSSの品質に依存します。信頼できる、メンテナンスされているOSSを選択してください。
